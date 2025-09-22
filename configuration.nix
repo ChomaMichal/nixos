@@ -84,7 +84,7 @@ in {
             "gtk-theme" = "Adwaita-dark";
           };
           "org/gnome/desktop/peripherals/mouse" = {
-            natural-scroll = true;
+            natural-scroll = false;
           };
         };
         lockAll = true; # optional: enforce the settings strictly
