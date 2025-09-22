@@ -41,6 +41,9 @@ in {
     clang
     tree-sitter
 
+    #lsp
+    clang-tools
+
     # man pages
     man-pages
     alejandra
