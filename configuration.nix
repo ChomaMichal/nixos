@@ -47,6 +47,8 @@ in {
     man-pages
     alejandra
     readline
+    ncurses
+    gnumake
   ];
 
   programs.nix-ld.enable = true;
