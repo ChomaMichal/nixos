@@ -46,11 +46,11 @@ in {
     # man pages
     man-pages
     alejandra
+    readline
   ];
 
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
-    readline
   ];
   # Gnome
   services.xserver.enable = true;
