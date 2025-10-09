@@ -105,8 +105,8 @@ in {
   programs.git = {
     enable = true;
     config = {
-      user.name = "felixbrgm";
-      user.email = "github.badly321@passinbox.com";
+      user.name = "michalchoma";
+      user.email = "michalkk04@gmail.com";
       pull.rebase = false;
     };
   };
