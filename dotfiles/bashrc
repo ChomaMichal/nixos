@@ -3,6 +3,7 @@ set -o vi
 alias ll="ls -la"
 alias vim="nvim"
 alias rebuild="~/nixos/rebuild.sh"
+alias funcheck='nix nix --extra-experimental-features "flakes nix-command" run github:froz42/funcheck'
 
 nix-shell-generate() {
   if [ ! -f shell.nix ]; then
