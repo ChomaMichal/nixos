@@ -39,6 +39,7 @@ in {
     xclip
     clang
     tree-sitter
+    valgrind
 
     #lsp
     clang-tools
