@@ -112,9 +112,9 @@ in {
     };
   };
 
-  nix.gc.automatic = true;
-  nix.gc.dates = "daily";
-  nix.gc.options = "--delete-older-than 3d";
+  # nix.gc.automatic = true;
+  # nix.gc.dates = "daily";
+  # nix.gc.options = "--delete-older-than 3d";
   nix.settings.auto-optimise-store = true;
 
   # Automatic checking of new changes of the config on github and rebuild if there is a new commit
