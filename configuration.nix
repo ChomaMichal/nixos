@@ -50,6 +50,7 @@ in {
     readline
     ncurses
     gnumake
+    libllvm
   ];
 
   programs.nix-ld.enable = true;
