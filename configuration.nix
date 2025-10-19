@@ -81,15 +81,15 @@ in {
             if enableCustomKeybindings
             then {
               # Custom keybindings
-              "switch-to-workspace-1" = ["<Super>1"];
-              "switch-to-workspace-2" = ["<Super>2"];
-              "switch-to-workspace-3" = ["<Super>3"];
-              "switch-to-workspace-4" = ["<Super>4"];
-              "switch-to-workspace-5" = ["<Super>5"];
-              "switch-to-workspace-6" = ["<Super>6"];
-              "switch-to-workspace-7" = ["<Super>7"];
-              "switch-to-workspace-8" = ["<Super>8"];
-              "switch-to-workspace-9" = ["<Super>9"];
+              "switch-to-workspace-1" = ["<Alt>1"];
+              "switch-to-workspace-2" = ["<Alt>2"];
+              "switch-to-workspace-3" = ["<Alt>3"];
+              "switch-to-workspace-4" = ["<Alt>4"];
+              "switch-to-workspace-5" = ["<Alt>5"];
+              "switch-to-workspace-6" = ["<Alt>6"];
+              "switch-to-workspace-7" = ["<Alt>7"];
+              "switch-to-workspace-8" = ["<Alt>8"];
+              "switch-to-workspace-9" = ["<Alt>9"];
               "toggle-fullscreen" = ["<Super>f"];
             }
             else {
