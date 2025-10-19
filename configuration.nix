@@ -4,6 +4,8 @@
   ...
 }: let
   username = "mchoma";
+  # Toggle for custom keybindings
+  enableCustomKeybindings = true; # Set to false to use defaults
 in {
   imports = [
     /etc/nixos/hardware-configuration.nix
@@ -75,18 +77,34 @@ in {
         settings = {
           "org/gnome/desktop/interface" = {
           };
-          "org/gnome/desktop/wm/keybindings" = {
-            "switch-to-workspace-1" = ["<Super>1"];
-            "switch-to-workspace-2" = ["<Super>2"];
-            "switch-to-workspace-3" = ["<Super>3"];
-            "switch-to-workspace-4" = ["<Super>4"];
-            "switch-to-workspace-5" = ["<Super>5"];
-            "switch-to-workspace-6" = ["<Super>6"];
-            "switch-to-workspace-7" = ["<Super>7"];
-            "switch-to-workspace-8" = ["<Super>8"];
-            "switch-to-workspace-9" = ["<Super>9"];
-            "toggle-fullscreen" = ["<Super>f"];
-          };
+          "org/gnome/desktop/wm/keybindings" =
+            if enableCustomKeybindings
+            then {
+              # Custom keybindings
+              "switch-to-workspace-1" = ["<Super>1"];
+              "switch-to-workspace-2" = ["<Super>2"];
+              "switch-to-workspace-3" = ["<Super>3"];
+              "switch-to-workspace-4" = ["<Super>4"];
+              "switch-to-workspace-5" = ["<Super>5"];
+              "switch-to-workspace-6" = ["<Super>6"];
+              "switch-to-workspace-7" = ["<Super>7"];
+              "switch-to-workspace-8" = ["<Super>8"];
+              "switch-to-workspace-9" = ["<Super>9"];
+              "toggle-fullscreen" = ["<Super>f"];
+            }
+            else {
+              # Unset/disable keybindings
+              "switch-to-workspace-1" = [];
+              "switch-to-workspace-2" = [];
+              "switch-to-workspace-3" = [];
+              "switch-to-workspace-4" = [];
+              "switch-to-workspace-5" = [];
+              "switch-to-workspace-6" = [];
+              "switch-to-workspace-7" = [];
+              "switch-to-workspace-8" = [];
+              "switch-to-workspace-9" = [];
+              "toggle-fullscreen" = [];
+            };
           "org/gnome/settings-daemon/plugins/media-keys" = {
             "search" = ["<Control>space"];
           };
