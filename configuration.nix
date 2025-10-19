@@ -44,6 +44,7 @@ in {
     #lsp
     clang-tools
 
+    vscode
     # man pages
     man-pages
     alejandra
