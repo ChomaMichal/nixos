@@ -105,6 +105,8 @@ in {
     tree-sitter
     valgrind
 
+    firefox
+
     clang-tools
     vscode
     man-pages
@@ -120,6 +122,7 @@ in {
     swww
     kitty
     wl-clipboard
+    kdePackages.dolphin
     wofi
   ];
 
