@@ -4,6 +4,73 @@
   ...
 }: let
   username = "mchoma";
+
+  # Per-machine file that controls bootloader behavior.
+  # Format (one line):
+  #   - UEFI:/dev/disk/by-uuid/<UUID>    (recommended for UEFI)
+  #   - BIOS:/dev/disk/by-id/<...>       (or simply a device path for BIOS)
+  deviceFile = "/etc/nixos/boot-device";
+
+  # Safely read the first non-empty line of the file into a string.
+  lines =
+    if builtins.pathExists deviceFile
+    then builtins.split "\n" (builtins.readFile deviceFile)
+    else [""];
+  firstLine = builtins.head lines;
+  trimmed = builtins.replaceStrings ["\r" "\t" " "] ["" "" ""] firstLine;
+
+  # If empty -> AUTO. Parse "MODE:TARGET" if present, else treat as a target path.
+  parts =
+    if trimmed == ""
+    then ["AUTO"]
+    else builtins.split ":" trimmed;
+  hasParts = builtins.length parts > 1;
+  mode =
+    if hasParts
+    then builtins.elemAt parts 0
+    else "AUTO";
+  target =
+    if hasParts
+    then builtins.elemAt parts 1
+    else
+      (
+        if trimmed == "AUTO"
+        then ""
+        else trimmed
+      );
+
+  # detect host firmware mode
+  isUEFI = builtins.pathExists "/sys/firmware/efi";
+
+  # decide which loader to enable
+  useSystemdBoot =
+    if mode == "UEFI"
+    then true
+    else if mode == "BIOS"
+    then false
+    else isUEFI;
+
+  # grub target device (string) or "nodev"
+  grubDevice =
+    if useSystemdBoot
+    then "nodev"
+    else
+      (
+        if target == ""
+        then "/dev/sda"
+        else target
+      );
+
+  # espDevice should be either null or a string (device path). Not a list.
+  espDevice =
+    if useSystemdBoot
+    then
+      (
+        if target == ""
+        then null
+        else target
+      )
+    else null;
 in {
   imports = [
     /etc/nixos/hardware-configuration.nix
@@ -19,10 +86,8 @@ in {
     extraGroups = ["input" "uinput" "networkmanager" "wheel"];
   };
 
-  # Packages
   nixpkgs.config.allowUnfree = true;
   environment.systemPackages = with pkgs; [
-    # Apps
     htop
     ghostty
     discord
@@ -32,7 +97,6 @@ in {
       url = "https://github.com/youwen5/zen-browser-flake/archive/master.tar.gz";
     }) {inherit pkgs;}).default
 
-    # neovim
     neovim
     fzf
     ripgrep
@@ -41,11 +105,8 @@ in {
     tree-sitter
     valgrind
 
-    #lsp
     clang-tools
-
     vscode
-    # man pages
     man-pages
     alejandra
     readline
@@ -53,45 +114,33 @@ in {
     gnumake
     libllvm
 
-    # Hyprland utilities
-    waybar # status bar
-    dunst # notification daemon
-    rofi-wayland # application launcher
-    swww # wallpaper daemon
-    kitty # terminal (Hyprland default, but you have ghostty)
-    wl-clipboard # clipboard utilities for Wayland
+    waybar
+    dunst
+    rofi-wayland
+    swww
+    kitty
+    wl-clipboard
+    wofi
   ];
 
   programs.nix-ld.enable = true;
-  programs.nix-ld.libraries = with pkgs; [
-  ];
-  # Desktop Environments
+  programs.nix-ld.libraries = with pkgs; [];
+
   services.xserver.enable = true;
-
-  # Display Manager (GDM) - allows choosing between GNOME and Hyprland at login
   services.xserver.displayManager.gdm.enable = true;
-
-  # GNOME
   services.xserver.desktopManager.gnome.enable = true;
 
-  # Hyprland
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
   };
 
-  # to see all possible settings type in
-  # gsettings list-schemas
-  # for all groups and
-  # gsettings list-keys SCHEMA_NAME
-  # to get the keys
   programs.dconf = {
     enable = true;
     profiles.user.databases = [
       {
         settings = {
-          "org/gnome/desktop/interface" = {
-          };
+          "org/gnome/desktop/interface" = {};
           "org/gnome/desktop/wm/keybindings" = {
             "switch-to-workspace-1" = ["<Alt>1"];
             "switch-to-workspace-2" = ["<Alt>2"];
@@ -116,12 +165,11 @@ in {
             natural-scroll = false;
           };
         };
-        lockAll = true; # optional: enforce the settings strictly
+        lockAll = true;
       }
     ];
   };
 
-  # Git
   programs.git = {
     enable = true;
     config = {
@@ -131,18 +179,14 @@ in {
     };
   };
 
-  # nix.gc.automatic = true;
-  # nix.gc.dates = "daily";
-  # nix.gc.options = "--delete-older-than 3d";
   nix.settings.auto-optimise-store = true;
 
-  # Automatic checking of new changes of the config on github and rebuild if there is a new commit
   systemd.timers.nixos-config-rebuild = {
     description = "Run nixos-config-update hourly";
     wantedBy = ["timers.target"];
     timerConfig = {
-      OnCalendar = "*:0/1"; # every minute
-      Persistent = true; # catch up if missed
+      OnCalendar = "*:0/1";
+      Persistent = true;
     };
   };
 
@@ -150,7 +194,7 @@ in {
     description = "Update NixOS config repository";
     serviceConfig = {
       Type = "oneshot";
-      WorkingDirectory = "/home/${username}/nixos"; # adjust this path to where your git repo is
+      WorkingDirectory = "/home/${username}/nixos";
       ExecStart = pkgs.writeShellScript "nixos-config-pull" ''
         set -euo pipefail
         export HOME=/home/${username}
@@ -159,8 +203,7 @@ in {
         echo "[nixos-config-pull] fetching..."
         ${pkgs.git}/bin/git fetch origin
 
-        # count commits on remote that are not in local
-        remoteAheadCount=$(${pkgs.git}/bin/git rev-list HEAD..@{u} --count)
+        remoteAheadCount=$(${pkgs.git}/bin/git rev-list HEAD..@{u} --count || echo 0)
 
         if [ "$remoteAheadCount" -gt 0 ]; then
           echo "[nixos-config-pull] remote ahead by $remoteAheadCount, pulling..."
@@ -172,10 +215,10 @@ in {
           exit 1
         fi
       '';
-      User = "${username}"; # or another user if your repo isn’t root-owned
+      User = "${username}";
       Environment = [
         "PATH=${pkgs.git}/bin:${pkgs.openssh}/bin"
-        "HOME=/home/${username}" # <--- so git+ssh sees ~/.ssh
+        "HOME=/home/${username}"
       ];
     };
   };
@@ -189,40 +232,37 @@ in {
     serviceConfig = {
       Type = "oneshot";
       ExecStart = pkgs.writeShellScript "nixos-config-rebuild" ''
-        # Once one command fails the script stops
         set -euo pipefail
-
-        # Rebuild
         ${pkgs.nixos-rebuild}/bin/nixos-rebuild switch \
-        --upgrade \
-        -I nixos-config=/home/${username}/nixos/configuration.nix \
-        -I nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos
+          --upgrade \
+          -I nixos-config=/home/${username}/nixos/configuration.nix \
+          -I nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos
       '';
-      # run as root (default), so we don't set User
       Environment = [
         "PATH=${pkgs.nix}/bin:${pkgs.nixos-rebuild}/bin:${pkgs.git}/bin:${pkgs.openssh}/bin:${pkgs.bash}/bin"
       ];
     };
   };
 
-  # Bootloader
-  boot.loader.grub.enable = true;
-  boot.loader.grub.device = "/dev/sda"; # Install GRUB on the MBR of the disk
-  # Enable networking
+  # Bootloader: per-machine controlled by /etc/nixos/boot-device
+  boot.loader.systemd-boot.enable = useSystemdBoot;
+  boot.loader.efi.canTouchEfiVariables = useSystemdBoot;
+
+  boot.loader.grub.enable = !useSystemdBoot;
+  boot.loader.grub.device = grubDevice;
+  boot.loader.grub.efiSupport = true;
+  boot.loader.grub.efiInstallAsRemovable = true;
+
   networking.networkmanager.enable = true;
 
-  # Configure keymap in X11
   services.xserver.xkb = {
     layout = "us";
     variant = "";
   };
 
-  # Set your time zone.
   time.timeZone = "Europe/Vienna";
 
-  # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
-
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "de_AT.UTF-8";
     LC_IDENTIFICATION = "de_AT.UTF-8";
@@ -235,10 +275,8 @@ in {
     LC_TIME = "de_AT.UTF-8";
   };
 
-  # Enable CUPS to print documents.
   services.printing.enable = true;
 
-  # Enable sound with pipewire.
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
