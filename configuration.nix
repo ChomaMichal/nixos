@@ -188,9 +188,8 @@ in {
   };
 
   # Bootloader
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-
+  boot.loader.grub.enable = true;
+  boot.loader.grub.device = "/dev/sda"; # Install GRUB on the MBR of the disk
   # Enable networking
   networking.networkmanager.enable = true;
 
