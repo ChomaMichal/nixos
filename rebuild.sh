@@ -25,7 +25,7 @@ fi
 git diff -U0
 
 echo "Rebuilding NixOS..."
-if ! sudo nixos-rebuild switch -I nixos-config=/home/mchoma/nixos/configuration.nix --upgrade; then
+if ! sudo nixos-rebuild switch -I nixos-config=/home/mchoma/nixos/configuration.nix ; then
   grep --color error nixos-switch.log
   exit 1
 fi
