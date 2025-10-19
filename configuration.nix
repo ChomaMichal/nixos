@@ -52,16 +52,33 @@ in {
     ncurses
     gnumake
     libllvm
+
+    # Hyprland utilities
+    waybar # status bar
+    dunst # notification daemon
+    rofi-wayland # application launcher
+    swww # wallpaper daemon
+    kitty # terminal (Hyprland default, but you have ghostty)
+    wl-clipboard # clipboard utilities for Wayland
   ];
 
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
   ];
-  # Gnome
+  # Desktop Environments
   services.xserver.enable = true;
 
+  # Display Manager (GDM) - allows choosing between GNOME and Hyprland at login
   services.xserver.displayManager.gdm.enable = true;
+
+  # GNOME
   services.xserver.desktopManager.gnome.enable = true;
+
+  # Hyprland
+  programs.hyprland = {
+    enable = true;
+    xwayland.enable = true;
+  };
 
   # to see all possible settings type in
   # gsettings list-schemas
