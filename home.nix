@@ -18,6 +18,10 @@ in {
       ".config/ghostty/config".source = ./dotfiles/ghostty;
       ".bashrc".source = ./dotfiles/bashrc;
       ".config/gdb/gdbinit".source = ./dotfiles/gdbinit;
+      ".config/hypr" = {
+        source = ./dotfiles/hypr;
+        recursive = true;
+      };
       ".config/nvim" = {
         source = ./dotfiles/nvim;
         recursive = true;
