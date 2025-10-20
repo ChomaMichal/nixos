@@ -88,7 +88,7 @@ in {
 
   nixpkgs.config.allowUnfree = true;
   fonts.packages = with pkgs; [
-    texlivePackages.jetbrainsmono-otf
+    nerd-fonts.jetbrains-mono
   ];
   environment.systemPackages = with pkgs; [
     htop
