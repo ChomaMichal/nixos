@@ -31,8 +31,7 @@ if ! sudo nixos-rebuild switch -I nixos-config=/home/mchoma/nixos/configuration.
 fi
 
 current=$(nixos-rebuild list-generations | grep current)
-git add .
-git commit -am "Rebuild succeeded — $current"
+git commit -Am "Rebuild succeeded — $current"
 git push
 
 popd >/dev/null
