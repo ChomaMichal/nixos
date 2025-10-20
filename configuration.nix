@@ -87,6 +87,9 @@ in {
   };
 
   nixpkgs.config.allowUnfree = true;
+  fonts.packages = with pkgs; [
+    texlivePackages.jetbrainsmono-otf
+  ];
   environment.systemPackages = with pkgs; [
     htop
     ghostty
