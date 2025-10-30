@@ -94,7 +94,12 @@ in {
     htop
     ghostty
     discord
-    spotify
+    (writeShellScriptBin "spotify" ''
+      exec ${pkgs.spotify}/bin/spotify \
+        --ozone-platform=wayland \
+        --enable-features=WaylandWindowDecorations,UseOzonePlatform \
+        "$@"
+    '')
     obsidian
     (import (builtins.fetchTarball {
       url = "https://github.com/youwen5/zen-browser-flake/archive/master.tar.gz";
