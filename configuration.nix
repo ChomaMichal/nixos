@@ -94,6 +94,7 @@ in {
     htop
     ghostty
     discord
+    spotify
     (writeShellScriptBin "spotify" ''
       exec ${pkgs.spotify}/bin/spotify \
         --ozone-platform=wayland \
