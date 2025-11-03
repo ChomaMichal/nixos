@@ -135,6 +135,8 @@ in {
     wl-clipboard
     kdePackages.dolphin
     wofi
+
+    steam
   ];
 
   programs.nix-ld.enable = true;
