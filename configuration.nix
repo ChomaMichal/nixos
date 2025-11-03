@@ -117,6 +117,7 @@ in {
 
     firefox
 
+    nodejs
     clang-tools
     vscode
     man-pages
